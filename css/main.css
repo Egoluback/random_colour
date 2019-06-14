@@ -1,0 +1,86 @@
+:root{
+    --main-size: 200px;
+    --radio-color: black;
+}
+
+*{
+    outline: none;
+}
+
+body{
+	font-family: 'Teko', sans-serif;
+}
+
+#rect{
+	cursor: pointer;
+	transition: all .2s;
+	height: var(--main-size);
+}
+
+#main-title span{
+	cursor: pointer;
+}
+
+#main-title span:hover{
+	text-decoration: black underline;
+}
+
+#rect:hover{
+	box-shadow: 1px 1px 3px 1px gray;
+}
+
+#text-color,#rect,#copied-text,#radios-conteiner,#main-title{
+	display: block;
+	width: var(--main-size);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#copy-link{
+    float: right;
+}
+
+#copy-link:hover{
+    cursor: pointer;
+    text-decoration: black underline;
+}
+
+#text-color, #copied-text{
+	text-align: center;
+}
+
+.copiedTr-enter-active, .copiedTr-leave-active{
+    transition: all .8s;
+}
+
+.copiedTr-enter, .copiedTr-leave-to{
+    transform: translateY(180%);
+    opacity: 0;
+}
+
+.input-radio{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid gray;
+    transition: .2s all linear;
+    outline: none;
+    margin-right: 5px;
+    position: relative;
+    top: 4px;
+    cursor: pointer;
+}
+
+.input-radio:checked{
+    border: 8px solid var(--radio-color);
+}
+
+
+#main-title{
+	text-transform: uppercase;
+	font-size: 300%;
+}

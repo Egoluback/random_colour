@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Random colour</title>
+	<script src = "jshelper/jshelper.js"></script>
+	<script src = "vue.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Raleway|Teko" rel="stylesheet">
+	<link href = "css/main.css" rel = "stylesheet">
+</head>
+<body>
+	<div id = "app">
+		<div id = "main-title"><span id = "title-href" @click = "initInterval()">click</span> to stop</div>
+		<div id = "rect" @click = "initInterval()"></div>
+		<div id = "text-color"><span class = "text-text-color">Colour: </span><span id = "main-text">{{ forUserColor }}</span><span id = "copy-link" @click = "copy()" title = "Copy">Copy</span></div>
+		<transition name = "copiedTr">
+			<div id = "copied-text" v-show = "isCopied">Copied!</div>
+		</transition>
+
+		<div id = "radios-conteiner">
+			<input name = "cTypeChoice" class = "input-radio" type = "radio" id = "cTypeChoice1" value = "" checked>
+	        <label for = "cTypeChoice1">HEX</label><br />
+	        <input name = "cTypeChoice" class = "input-radio" type = "radio" id = "cTypeChoice2" value = "">
+	        <label for = "cTypeChoice2">RGB</label><br />
+	        <input name = "cTypeChoice" class = "input-radio" type = "radio" id = "cTypeChoice3" value = "">
+	        <label for = "cTypeChoice2">CMYK</label>
+	    </div>
+	</div>
+	<script>
+		const jsH = new JsHelper;
+		const symb16 = ['a','b','c','d','e','f'];
+
+		function getRandNum16(){
+			const mainDefNum = jsH.getRandNum(0,15);
+			if (mainDefNum > 9)
+				return jsH.getRandFromArr(symb16);
+			else
+				return mainDefNum;
+		}
+
+		function cmykToRGB(cmykStr) {
+		    var cmykArr = cmykStr.split(',');
+
+		    for (let i = 0; i < cmykArr.length; i++)
+		    	cmykArr[i] = Number(cmykArr[i]);
+
+		    var r = 0;
+		    	g = 0;
+		    	b = 0;
+		   		c = cmykArr[0] / 100;
+		    	m = cmykArr[1] / 100;
+		    	y = cmykArr[2] / 100;
+		    	k = cmykArr[3] / 100;
+
+	        r = Math.round((1 - Math.min(1, c * (1 - k) + k)) * 255);
+	        g = Math.round((1 - Math.min(1, m * (1 - k) + k)) * 255);
+	        b = Math.round((1 - Math.min(1, y * (1 - k) + k)) * 255);
+
+	        return 'rgb(' + r + ',' + g + ',' + b + ')';
+		}
+
+		const app = new Vue({
+			el: "#app",
+			data: {
+				forUserColor: "",
+				isStop: false,
+				isCopied: false,
+				mainColor: ""
+			},
+			created:function(){
+				const root = document.querySelector(':root');
+
+				const mainInterval = setInterval( () => {
+					if (!this.isStop){
+						if (document.querySelector('#cTypeChoice1').checked){
+							this.forUserColor = this.getRandColor16();
+							this.mainColor = this.forUserColor;
+						} else if (document.querySelector('#cTypeChoice2').checked){
+							this.forUserColor = this.getRandColorRGB();
+							this.mainColor = this.forUserColor;
+						} else{
+							this.forUserColor = this.getRandColorCMYK();
+							this.mainColor = cmykToRGB(this.forUserColor);
+						}
+
+						document.querySelector('#main-text').style.cssText = "color: " + this.mainColor + ';';
+						root.style.setProperty('--radio-color', this.mainColor);
+						document.querySelector('#rect').style.cssText = 'background-color: ' + this.mainColor + ';';
+					}
+				},100);
+			},
+			methods: {
+				getRandColorRGB: function(){
+					return 'rgb(' + jsH.getRandNum(0,255) + ', ' + jsH.getRandNum(0,255) + ', ' + jsH.getRandNum(0,255) + ')';
+				},
+				getRandColor16: function(){
+					var resultColour = "#";
+					for (let i = 0; i < 6; i++)
+						resultColour += getRandNum16();
+					return resultColour;
+				},
+				getRandColorCMYK: function(){
+					return jsH.getRandNum(0,100) + "," + jsH.getRandNum(0,100) + "," + jsH.getRandNum(0,100) + "," + jsH.getRandNum(0,100);
+				},
+				initInterval: function(){
+					this.isStop = !this.isStop;
+				},
+				copy: function(){
+					const res = document.getElementById('main-text');
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+
+                    range.selectNodeContents(res);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    document.execCommand('copy');
+                    
+                    this.isCopied = true;
+                    selection.removeAllRanges();
+
+                    setTimeout( () => {
+                    	this.isCopied = false;
+                    },1000);
+                }
+			}
+		});
+		
+	</script>
+</body>
+</html>
